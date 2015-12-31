@@ -5,11 +5,11 @@ var jsdom = require("jsdom").jsdom;
 global.document = jsdom('<!doctype html><html><body></body></html>');
 global.window   = document.defaultView;
 
+window.history.replaceState(null, null, "http://nikolay.rocks/like/totally");
+
 var router = require("../lib/router");
 
 test("micro router", (t)=> {
-  window.history.replaceState(null, null, "http://nikolay.rocks/like/totally");
-
   t.test("Basic matching", (t)=> {
     t.plan(1);
 
@@ -36,6 +36,110 @@ test("micro router", (t)=> {
     router({
       "/like/totally":   ()=> { t.ok(true); },
       "/something/else": ()=> { t.ok(false); }
+    });
+  });
+
+  t.test("Doesn't trigger on subroutes", (t)=> {
+    t.plan(1);
+
+    router({
+      "/like":         ()=> { t.ok(false); },
+      "/like/totally": ()=> { t.ok(true); }
+    });
+  });
+
+  t.test("It works correctly with the root route", (t)=> {
+    t.plan(2);
+
+    window.history.replaceState(null, null, "http://nikolay.rocks/");
+
+    router({
+      "/":               ()=> { t.ok(true); },
+      "/something/else": ()=> { t.ok(false); }
+    });
+
+    window.history.replaceState(null, null, "http://nikolay.rocks");
+
+    router({
+      "/":               ()=> { t.ok(true); },
+      "/something/else": ()=> { t.ok(false); }
+    });
+
+    window.history.replaceState(null, null, "http://nikolay.rocks/like/totally");
+  });
+
+  t.test("It recognizes a param in the pattern", (t)=> {
+    t.plan(1);
+
+    router({
+      "/something/:else": ()=> { t.ok(false); },
+      "/like/:what": (params)=> {
+        t.deepEqual(params, {what: "totally"});
+      }
+    });
+  });
+
+  t.test("It recognizes a param in the beggining of a pattern", (t)=> {
+    t.plan(1);
+
+    router({
+      "/:something/else": ()=> { t.ok(false); },
+      "/:like/totally": (params)=> {
+        t.deepEqual(params, {like: "like"});
+      }
+    });
+  });
+
+  t.test("It can handle several params in the pattern", (t)=> {
+    t.plan(1);
+
+    router({
+      "/something/else": ()=> { t.ok(false); },
+      "/:like/:what": (params)=> {
+        t.deepEqual(params, {like: "like", what: "totally"});
+      }
+    });
+  });
+
+  t.test("It can handle whildcards as single tokens", (t)=> {
+    t.plan(1);
+
+    router({
+      "/something/else": ()=> { t.ok(false); },
+      "/like/*what": (params)=> {
+        t.deepEqual(params, {what: "totally"});
+      }
+    });
+  });
+
+  t.test("It handles named whildcards throughout the whole pathname", (t)=> {
+    t.plan(1);
+
+    router({
+      "/something/else": ()=> { t.ok(false); },
+      "/*what": (params)=> {
+        t.deepEqual(params, {what: "like/totally"});
+      }
+    });
+  });
+
+  t.test("It handles whildcards before the starting slash", (t)=> {
+    t.plan(1);
+
+    router({
+      "*what": (params)=> {
+        t.deepEqual(params, {what: "/like/totally"});
+      }
+    });
+  });
+
+  t.test("It can take a whildcard without a name", (t)=> {
+    t.plan(1);
+
+    router({
+      "*": (params)=> {
+        t.deepEqual(params, {"": "/like/totally"});
+      }
     });
   });
 });
