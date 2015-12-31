@@ -4,7 +4,8 @@
   "description": "A micro HTML5 router",
   "main": "lib/router.js",
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "tape test/*.js",
+    "test:dev": "tape test/*.js | faucet"
   },
   "repository": {
     "type": "git",
