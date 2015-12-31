@@ -8,7 +8,7 @@ to just route your stuff somewhere and be done with it.
 The basic routing looks kind of like that:
 
 ```js
-import { route } from "micro-router";
+import route from "micro-router";
 
 route({
   "/users":              callback1,
@@ -18,29 +18,7 @@ route({
 });
 ```
 
-__NOTE__: the `route` method kicks in the routing right away
-
-Working with the HTML5 push state:
-
-```js
-import { push, replace } from "micro-router";
-
-push("/nikolay/rocks"[, title]);    // push in a new state
-replace("/nikolay/rocks"[, title]); // replace the current state
-```
-
-Additionally you can highjack link clicks to automatically push their urls in:
-
-```js
-import { highjackLinks } from "micro-router";
-
-// highjacks all links that start with "/"
-highjackLinks(true);
-
-// if you need more flexibility around highjacking
-// only highjack links that have class "local" on them
-highjackLinks((link)=> { link.classList.contains("local") });
-```
+__NOTE__: this call kicks in the routing right away
 
 ## Copyright & License
 
