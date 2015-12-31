@@ -29,7 +29,7 @@ test("micro router", (t)=> {
   });
 
   t.test("Doesn't care about trailing slashes in the pathname", (t)=> {
-    window.history.replaceState(null, null, "http://nikolay.rocks/like/totally/");
+    window.history.replaceState(null, null, "/like/totally/");
 
     t.plan(1);
 
@@ -51,7 +51,7 @@ test("micro router", (t)=> {
   t.test("It works correctly with the root route", (t)=> {
     t.plan(2);
 
-    window.history.replaceState(null, null, "http://nikolay.rocks/");
+    window.history.replaceState(null, null, "/");
 
     router({
       "/":               ()=> { t.ok(true); },
@@ -65,7 +65,7 @@ test("micro router", (t)=> {
       "/something/else": ()=> { t.ok(false); }
     });
 
-    window.history.replaceState(null, null, "http://nikolay.rocks/like/totally");
+    window.history.replaceState(null, null, "/like/totally");
   });
 
   t.test("It recognizes a param in the pattern", (t)=> {
@@ -142,4 +142,26 @@ test("micro router", (t)=> {
       }
     });
   });
+
+  t.test("It handles the extra params in the search line", (t)=> {
+    t.plan(1);
+
+    var query = "i=main&mode=front&sid=de8d49b78a85a322c4155015fdce22c4&enc=+Hello%20&empty";
+
+    window.history.replaceState(null, null, "/like/totally?"+ query);
+
+    router({
+      "/something/:else": ()=> { t.ok(false); },
+      "/like/:what": (params)=> {
+        t.deepEqual(params, {
+          what:  "totally",
+          enc:   " Hello ",
+          i:     "main",
+          mode:  "front",
+          sid:   "de8d49b78a85a322c4155015fdce22c4",
+          empty: ""
+        });
+      }
+    });
+  })
 });
