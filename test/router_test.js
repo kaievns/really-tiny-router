@@ -4,16 +4,16 @@ var jsdom = require("jsdom").jsdom;
 // faking it
 global.document = jsdom('<!doctype html><html><body></body></html>');
 global.window   = document.defaultView;
-
 window.history.replaceState(null, null, "http://nikolay.rocks/like/totally");
 
 var router = require("../lib/router");
+var route  = router.route;
 
 test("micro router", (t)=> {
   t.test("Basic matching", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "/like/totally":   ()=> { t.ok(true); },
       "/something/else": ()=> { t.ok(false); }
     });
@@ -22,7 +22,7 @@ test("micro router", (t)=> {
   t.test("Doesn't care about trailing slashes in patterns", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "/like/totally/":  ()=> { t.ok(true); },
       "/something/else": ()=> { t.ok(false); }
     });
@@ -33,7 +33,7 @@ test("micro router", (t)=> {
 
     t.plan(1);
 
-    router({
+    route({
       "/like/totally":   ()=> { t.ok(true); },
       "/something/else": ()=> { t.ok(false); }
     });
@@ -42,7 +42,7 @@ test("micro router", (t)=> {
   t.test("Doesn't trigger on subroutes", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "/like":         ()=> { t.ok(false); },
       "/like/totally": ()=> { t.ok(true); }
     });
@@ -53,14 +53,14 @@ test("micro router", (t)=> {
 
     window.history.replaceState(null, null, "/");
 
-    router({
+    route({
       "/":               ()=> { t.ok(true); },
       "/something/else": ()=> { t.ok(false); }
     });
 
     window.history.replaceState(null, null, "http://nikolay.rocks");
 
-    router({
+    route({
       "/":               ()=> { t.ok(true); },
       "/something/else": ()=> { t.ok(false); }
     });
@@ -71,7 +71,7 @@ test("micro router", (t)=> {
   t.test("It recognizes a param in the pattern", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "/something/:else": ()=> { t.ok(false); },
       "/like/:what": (params)=> {
         t.deepEqual(params, {what: "totally"});
@@ -82,7 +82,7 @@ test("micro router", (t)=> {
   t.test("It recognizes a param in the beggining of a pattern", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "/:something/else": ()=> { t.ok(false); },
       "/:like/totally": (params)=> {
         t.deepEqual(params, {like: "like"});
@@ -93,7 +93,7 @@ test("micro router", (t)=> {
   t.test("It can handle several params in the pattern", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "/something/else": ()=> { t.ok(false); },
       "/:like/:what": (params)=> {
         t.deepEqual(params, {like: "like", what: "totally"});
@@ -104,7 +104,7 @@ test("micro router", (t)=> {
   t.test("It can handle whildcards as single tokens", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "/something/else": ()=> { t.ok(false); },
       "/like/*what": (params)=> {
         t.deepEqual(params, {what: "totally"});
@@ -115,7 +115,7 @@ test("micro router", (t)=> {
   t.test("It handles named whildcards throughout the whole pathname", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "/something/else": ()=> { t.ok(false); },
       "/*what": (params)=> {
         t.deepEqual(params, {what: "like/totally"});
@@ -126,7 +126,7 @@ test("micro router", (t)=> {
   t.test("It handles whildcards before the starting slash", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "*what": (params)=> {
         t.deepEqual(params, {what: "/like/totally"});
       }
@@ -136,7 +136,7 @@ test("micro router", (t)=> {
   t.test("It can take a whildcard without a name", (t)=> {
     t.plan(1);
 
-    router({
+    route({
       "*": (params)=> {
         t.deepEqual(params, {"": "/like/totally"});
       }
@@ -150,7 +150,7 @@ test("micro router", (t)=> {
 
     window.history.replaceState(null, null, "/like/totally?"+ query);
 
-    router({
+    route({
       "/something/:else": ()=> { t.ok(false); },
       "/like/:what": (params)=> {
         t.deepEqual(params, {
@@ -163,5 +163,20 @@ test("micro router", (t)=> {
         });
       }
     });
-  })
+  });
+
+  t.test("It handles the pushstates properly", (t)=> {
+    t.plan(1);
+
+    window.history.replaceState(null, null, "/");
+
+    route({
+      "/something/else": ()=> { t.ok(false); },
+      "/like/totally":   ()=> { t.ok(true); }
+    });
+
+    setTimeout(()=> { router.push("/one/thing");     }, 10);
+    setTimeout(()=> { router.push("/another/thing"); }, 20);
+    setTimeout(()=> { router.push("/like/totally");  }, 30);
+  });
 });
