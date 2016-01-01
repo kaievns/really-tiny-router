@@ -8,7 +8,7 @@ to just route your stuff somewhere and be done with it.
 The basic routing looks kind of like that:
 
 ```js
-import { route } from "micro-router";
+import { route } from "really-tiny-router";
 
 route({
   "/users":              callback1,
@@ -24,7 +24,7 @@ There is also couple of methods to work with the HTML5 history that tap into
 the configured routes:
 
 ```js
-import { push, replace } from "micro-router";
+import { push, replace } from "really-tiny-router";
 
 // pushing a new state into the history
 push("http://nikolay.rocks/blah"[, title]);
