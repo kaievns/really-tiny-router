@@ -1,4 +1,4 @@
-# Micro Router
+# Really Tiny Router
 
 A zero-whistles, bare metal HTML5 router that supports push state. When you need
 to just route your stuff somewhere and be done with it.
