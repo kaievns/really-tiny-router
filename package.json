@@ -1,7 +1,7 @@
 {
-  "name": "micro-router",
+  "name": "really-tiny-router",
   "version": "1.0.0",
-  "description": "A micro HTML5 router",
+  "description": "A really tiny HTML5 router",
   "main": "lib/router.js",
   "scripts": {
     "test": "tape test/*.js",
@@ -9,19 +9,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MadRabbit/micro-router.git"
+    "url": "git+https://github.com/MadRabbit/really-tiny-router.git"
   },
   "keywords": [
     "router",
-    "micro",
+    "really",
+    "tiny",
     "html5"
   ],
   "author": "Nikolay Nemshilov",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MadRabbit/micro-router/issues"
+    "url": "https://github.com/MadRabbit/really-tiny-router/issues"
   },
-  "homepage": "https://github.com/MadRabbit/micro-router#readme",
+  "homepage": "https://github.com/MadRabbit/really-tiny-router#readme",
   "devDependencies": {
     "faucet": "0.0.1",
     "jsdom": "^7.2.2",
