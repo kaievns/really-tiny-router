@@ -79,6 +79,21 @@ test("micro router", (t)=> {
     });
   });
 
+  t.test("It URL decodes data from the params", (t)=> {
+    t.plan(1);
+
+    window.history.replaceState(null, null, "/like/+Hello%20");
+
+    route({
+      "/something/:else": ()=> { t.ok(false); },
+      "/like/:what": (params)=> {
+        t.deepEqual(params, {what: " Hello "});
+      }
+    });
+
+    window.history.replaceState(null, null, "/like/totally");
+  });
+
   t.test("It recognizes a param in the beggining of a pattern", (t)=> {
     t.plan(1);
 
